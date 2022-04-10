@@ -1,0 +1,13 @@
+@media(max-width: 739px) and (max-width: 1023px){
+    .nav-responsive{
+        display: flex !important;
+        flex-direction:row !important;
+
+    }
+    .navbar-collapse{
+        flex-basis: 0% !important;
+    }
+    .nav-responsive li{
+        margin: 0 20px;
+    }
+}
