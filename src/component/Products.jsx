@@ -1,8 +1,12 @@
-import React,{useState,useEffect} from 'react'
+import React,{useState,useEffect,useMemo} from 'react'
 import {DATA} from '../DATA'
 import '../css/Products.css'
+import {useDispatch} from 'react-redux'
+import {addCart} from '../redux/action'
+
+
 const Products = () => {
-    const [data,setData] = useState(DATA)
+    const [data,setData] = useState(useMemo(()=>DATA),[])
     const [filter,setFilter] = useState(data)
     const [dataId,setDataId] = useState([]);
     const [category,setCategory] = useState('');
@@ -14,6 +18,9 @@ const Products = () => {
     const [checkedState, setCheckedState] = useState(
         new Array(DATA.length).fill(false)
     );
+
+    
+    const dispatch = useDispatch();
 
     useEffect(()=>{          
         const filterProduct = () => {
@@ -80,7 +87,7 @@ const Products = () => {
     const selectAll = (status) => {
         const updatedCheckedState = checkedState.map((item) =>
         { 
-          if(item == false && status ==false ){
+          if(item === false && status === false ){
             return !item;
           }
           return !item;
@@ -88,6 +95,10 @@ const Products = () => {
       );
 
       setCheckedState(updatedCheckedState);
+    }
+
+    const handleBuy = (product) => {
+        dispatch(addCart(product))
     }
     const ShowProducts = () => {
         return(
@@ -115,7 +126,7 @@ const Products = () => {
                                     <div className="card-body text-center">
                                         <h5 className="card-title">{item.title}</h5>
                                         <p className="card-text lead">{formatNumber(item.price)}VND</p>  
-                                        <a href="#" className="btn btn-primary">Mua</a>
+                                        <button  className="btn btn-primary" onClick={()=>handleBuy(item)}>Mua</button>
                                         {isSelect?<button className= "btn btn-danger btn-delete" onClick={()=>deleteOneItem(item.id)}>Xóa</button> : ''}
                                     </div>
                               
