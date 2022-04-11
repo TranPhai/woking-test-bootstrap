@@ -1,10 +1,11 @@
-import React,{useState} from 'react'
+import React,{useState,useEffect} from 'react'
 import {DATA} from '../DATA'
 import '../css/Products.css'
 const Products = () => {
     const [data,setData] = useState(DATA)
     const [filter,setFilter] = useState(data)
     const [dataId,setDataId] = useState([]);
+    const [category,setCategory] = useState('');
 
     const [isSelect,setIsSelect] = useState(false);
     const [isDelele,setDelete] = useState(true);
@@ -14,17 +15,25 @@ const Products = () => {
         new Array(DATA.length).fill(false)
     );
 
-    const filterProduct = (category) => {
-        
-        let newList = data;
-        if(category === 'new'){
-            newList = data.filter((item)=>{return item.status === 'new'})
-        }
-        else if(category !== ''){
-            newList = data.filter((item)=>{return item.category === category})
-        }
-        setFilter(newList);
-    } 
+    useEffect(()=>{          
+        const filterProduct = () => {
+            let newList = data;
+            if(category === 'new'){
+                newList = data.filter((item)=>{return item.status === 'new'})
+            }
+            else if(category !== ''){
+                newList = data.filter((item)=>{return item.category === category})
+            }
+            setFilter(newList);
+        } 
+        filterProduct();
+
+    },[category])
+    
+
+
+
+
 
     const formatNumber = (num) =>{
         return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')
@@ -61,7 +70,7 @@ const Products = () => {
         setDelete(!isDelele);
     }
 
-    const makeNew = () => {
+    const deleteConfirm = () => {
         const muntipleItem = data.filter((item,index) => !dataId.includes(item.id));
         setData(muntipleItem);  
         setFilter(muntipleItem);
@@ -85,16 +94,16 @@ const Products = () => {
             <>
                 <div className="buttons d-flex justify-content-center mb-5">
                     <div className="row row-res">
-                        <button className="col-sm-3 btn btn-outline-dark" onClick={()=>filterProduct('')}>Tất cả</button>
-                        <button className="col-sm-3 btn btn-outline-dark"onClick={()=>filterProduct("new")}>Sản phẩm mới</button>
-                        <button className="col-sm-3 btn btn-outline-dark"onClick={()=>filterProduct("IPhone")}>IPhone</button>
-                        <button className="col-sm-3 btn btn-outline-dark"onClick={()=>filterProduct("Samsung")}>Samsung</button>
-                        <button className="col-sm-3 btn btn-outline-dark"onClick={()=>filterProduct("Xiaomi")}>Xiaomi</button>
-                        <button className="col-sm-3 btn btn-outline-dark"onClick={()=>filterProduct("Oppo")}>Oppo</button>
+                        <button className="col-sm-3 btn btn-outline-dark" onClick={()=>setCategory('')}>Tất cả</button>
+                        <button className="col-sm-3 btn btn-outline-dark"onClick={()=>setCategory("new")}>Sản phẩm mới</button>
+                        <button className="col-sm-3 btn btn-outline-dark"onClick={()=>setCategory("IPhone")}>IPhone</button>
+                        <button className="col-sm-3 btn btn-outline-dark"onClick={()=>setCategory("Samsung")}>Samsung</button>
+                        <button className="col-sm-3 btn btn-outline-dark"onClick={()=>setCategory("Xiaomi")}>Xiaomi</button>
+                        <button className="col-sm-3 btn btn-outline-dark"onClick={()=>setCategory("Oppo")}>Oppo</button>
                         <button className="col-sm-3 btn btn-outline-dark"onClick={()=>setIsSelect(prev=> !prev)}>Select</button>
                         {isSelect ?<button className="col-sm-3 btn btn-outline-dark" onClick={()=>selectAll(isSelectAll)}>SelectAll</button>:''}
                         {isSelect && isDelele ?<button className="col-sm-3 btn btn-primary"onClick={deleteMultiple}>Delete</button>:''}
-                        {!isDelele?<button className="col-sm-3 btn btn-danger"onClick={makeNew}>Delete Confirm</button>:''}
+                        {!isDelele?<button className="col-sm-3 btn btn-danger"onClick={deleteConfirm}>Delete Confirm</button>:''}
                     </div>
                 </div>
                 { filter.map((item,index)=>{
@@ -105,7 +114,7 @@ const Products = () => {
                                     <img src={item.img} className="card-img-top" alt={item.title}/>
                                     <div className="card-body text-center">
                                         <h5 className="card-title">{item.title}</h5>
-                                        <p className="card-text lead">{formatNumber(item.price)}VND</p>
+                                        <p className="card-text lead">{formatNumber(item.price)}VND</p>  
                                         <a href="#" className="btn btn-primary">Mua</a>
                                         {isSelect?<button className= "btn btn-danger btn-delete" onClick={()=>deleteOneItem(item.id)}>Xóa</button> : ''}
                                     </div>
@@ -114,14 +123,14 @@ const Products = () => {
                                {item.status === 'new' ? <div className="item__status">
                                     <div className="item__status-title">New</div>
                                 </div> : <div></div>  } 
-                                {isSelect?<div className="left-section">
+                                {isSelect?<div className="left-section">  
                                     <input
                                         type="checkbox"
                                         id={`custom-checkbox-${index}`}
                                         name={item.title}
                                         value={item.title}
-                                        checked={checkedState[item.id-1]}
-                                        onChange={() => handleOnChange(item.id)}
+                                        checked={checkedState[item.id-1]}  //checkedState
+                                        onChange={() => handleOnChange(item.id)}  //handleOnChange
                                     />
                                    
                                 </div>:''}
